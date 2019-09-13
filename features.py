@@ -76,4 +76,4 @@ def feature_descriptor(imageName, colorModel):
                 temp_arr = img_lbp[i * 100:(i * 100) + 100, j * 100:(j * 100) + 100]
                 temp, bin_ed = np.histogram(ft.local_binary_pattern(temp_arr, length, 50), bins=256, density=True)
                 arr_lbp.append(temp)
-        return np.array(arr_lbp, dtype=int)
+        return arr_lbp
