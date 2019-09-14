@@ -1,16 +1,15 @@
 import cv2
 import numpy as np
 from PIL import Image
-from bson import decimal128
 from scipy.stats import skew
 import skimage.feature as ft
-from bson.decimal128 import Decimal128
+import os
 
 
 def feature_descriptor(imageName, colorModel):
     image = cv2.imread(imageName)
     imago = Image.open(imageName)
-
+    head, tail = os.path.split(imago.filename)
     # matrix dimensions before slicing
     width, height = imago.size
 
@@ -61,7 +60,7 @@ def feature_descriptor(imageName, colorModel):
         mean = np.concatenate((mean_arr_y, mean_arr_u, mean_arr_v)).tolist()
         dev = np.concatenate((dev_arr_y, dev_arr_u, dev_arr_v)).tolist()
         skew1 = np.concatenate((skew_arr_y, skew_arr_u, skew_arr_v)).tolist()
-        return mean, dev, skew1
+        return mean, dev, skew1, tail
     #########################
     # LBP
     #########################
@@ -75,5 +74,5 @@ def feature_descriptor(imageName, colorModel):
             for j in range(red_width):
                 temp_arr = img_lbp[i * 100:(i * 100) + 100, j * 100:(j * 100) + 100]
                 temp, bin_ed = np.histogram(ft.local_binary_pattern(temp_arr, length, 50), bins=256, density=True)
-                arr_lbp.append(temp)
-        return arr_lbp
+                arr_lbp.append(temp.tolist())
+        return arr_lbp, tail

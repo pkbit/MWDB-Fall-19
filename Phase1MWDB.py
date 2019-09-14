@@ -13,11 +13,12 @@ db = client.MWDB
 # extract all images
 images = glob.glob('C:/Users/priya/Documents/SmallerDataset/*.jpg')
 
-#Task 2
+# Task 2
 # loop through each image to calculate feature descriptor
 for image in images:
     # Insert color moments' feature descriptors
-    mean, dev, skewness = features.feature_descriptor(image, 'CM')
-    db.cm.insert_one({"imageName": image, "mean": mean, "variance": dev, "skewness": skewness})
+    mean, dev, skewness, imageName = features.feature_descriptor(image, 'CM')
+    db.cm.insert_one({"imageName": imageName, "mean": mean, "variance": dev, "skewness": skewness})
     # Insert LBP feature descriptors
-    db.lbp.insert_one({"imageName": image, "LBP": features.feature_descriptor(image, 'LBP')})
+    lbpHist, imageName = features.feature_descriptor(image, 'LBP')
+    db.lbp.insert_one({"imageName": imageName, "LBP": lbpHist})
