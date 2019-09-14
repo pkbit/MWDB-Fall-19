@@ -16,24 +16,26 @@ def feature_descriptor(imageName, colorModel):
     # matrix dimensions after slicing
     red_width = width / 100
     red_height = height / 100
+
+
     #########################
     # color moments
     #########################
     if colorModel == 'CM':
         # mean
-        mean_arr_y = []
-        mean_arr_u = []
-        mean_arr_v = []
+        mean_y = []
+        mean_u = []
+        mean_v = []
         mean = []
         # standard deviation
-        dev_arr_y = []
-        dev_arr_u = []
-        dev_arr_v = []
+        dev_y = []
+        dev_u = []
+        dev_v = []
         dev = []
         # skewness
-        skew_arr_y = []
-        skew_arr_u = []
-        skew_arr_v = []
+        skew_y = []
+        skew_u = []
+        skew_v = []
         skew1 = []
         # convert from RGB to YUV
         img_yuv = cv2.cvtColor(image, cv2.COLOR_BGR2YUV)
@@ -46,33 +48,33 @@ def feature_descriptor(imageName, colorModel):
                 arr_u = u[i * 100:(i * 100) + 99, j * 100:(j * 100) + 99]
                 arr_v = v[i * 100:(i * 100) + 99, j * 100:(j * 100) + 99]
                 # mean
-                mean_arr_y.append(np.mean(arr_y))
-                mean_arr_u.append(np.mean(arr_u))
-                mean_arr_v.append(np.mean(arr_v))
+                mean_y.append(np.mean(arr_y))
+                mean_u.append(np.mean(arr_u))
+                mean_v.append(np.mean(arr_v))
                 # standard deviation
-                dev_arr_y.append(np.std(arr_y))
-                dev_arr_u.append(np.std(arr_u))
-                dev_arr_v.append(np.std(arr_v))
+                dev_y.append(np.std(arr_y))
+                dev_u.append(np.std(arr_u))
+                dev_v.append(np.std(arr_v))
                 # skewness
-                skew_arr_y.append(skew(arr_y.flatten()))
-                skew_arr_u.append(skew(arr_u.flatten()))
-                skew_arr_v.append(skew(arr_v.flatten()))
-        mean = np.concatenate((mean_arr_y, mean_arr_u, mean_arr_v)).tolist()
-        dev = np.concatenate((dev_arr_y, dev_arr_u, dev_arr_v)).tolist()
-        skew1 = np.concatenate((skew_arr_y, skew_arr_u, skew_arr_v)).tolist()
-        return mean, dev, skew1, tail
+                skew_y.append(skew(arr_y.flatten()))
+                skew_u.append(skew(arr_u.flatten()))
+                skew_v.append(skew(arr_v.flatten()))
+        concatCM = np.concatenate((mean_y, mean_u, mean_v, dev_y, dev_u, dev_v, skew_y, skew_u, skew_v)).tolist()
+        return concatCM, tail
     #########################
     # LBP
     #########################
     elif colorModel == 'LBP':
         img_lbp = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        temp = []
-        arr_lbp = []
         radius = 50
         length = 8 * radius
         for i in range(red_height):
             for j in range(red_width):
-                temp_arr = img_lbp[i * 100:(i * 100) + 100, j * 100:(j * 100) + 100]
-                temp, bin_ed = np.histogram(ft.local_binary_pattern(temp_arr, length, 50), bins=256, density=True)
-                arr_lbp.append(temp.tolist())
-        return arr_lbp, tail
+                block = img_lbp[i * 100:(i * 100) + 100, j * 100:(j * 100) + 100]
+                lbp = ft.local_binary_pattern(block, length, radius, 'default').reshape(10000, )
+                temp, bin_ed = np.histogram(lbp, bins=np.arange(257), density=True)
+                if i == 0 and j == 0:
+                    arr_lbp = np.array(temp)
+                else:
+                    arr_lbp = np.concatenate([arr_lbp, temp])
+        return arr_lbp.tolist(), tail
