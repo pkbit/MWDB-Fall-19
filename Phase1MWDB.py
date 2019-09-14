@@ -1,9 +1,4 @@
 from pymongo import MongoClient
-import cv2
-import numpy as np
-from PIL import Image
-from scipy.stats import skew
-import skimage.feature as ft
 import glob
 import features
 
@@ -14,14 +9,15 @@ except:
     print "no success"
 
 db = client.MWDB
-# cm_feature_descriptors = db.cm_feature_descriptors
-lbp = db.lbp_feature_descriptors
 
 # extract all images
 images = glob.glob('C:/Users/priya/Documents/SmallerDataset/*.jpg')
 
+#Task 2
 # loop through each image to calculate feature descriptor
 for image in images:
-    #print features.feature_descriptor(image, 'LBP')
-    lbp.insert_one({"imageName": image, "LBP": features.feature_descriptor(image, 'LBP')})
-    print "image"
+    # Insert color moments' feature descriptors
+    mean, dev, skewness = features.feature_descriptor(image, 'CM')
+    db.cm.insert_one({"imageName": image, "mean": mean, "variance": dev, "skewness": skewness})
+    # Insert LBP feature descriptors
+    db.lbp.insert_one({"imageName": image, "LBP": features.feature_descriptor(image, 'LBP')})

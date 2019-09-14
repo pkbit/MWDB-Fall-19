@@ -58,14 +58,14 @@ def feature_descriptor(imageName, colorModel):
                 skew_arr_y.append(skew(arr_y.flatten()))
                 skew_arr_u.append(skew(arr_u.flatten()))
                 skew_arr_v.append(skew(arr_v.flatten()))
-        mean = np.concatenate((mean_arr_y, mean_arr_u, mean_arr_v))
-        dev = np.concatenate((dev_arr_y, dev_arr_u, dev_arr_v))
-        skew1 = np.concatenate((skew_arr_y, skew_arr_u, skew_arr_v))
-        return mean, dev, skew
+        mean = np.concatenate((mean_arr_y, mean_arr_u, mean_arr_v)).tolist()
+        dev = np.concatenate((dev_arr_y, dev_arr_u, dev_arr_v)).tolist()
+        skew1 = np.concatenate((skew_arr_y, skew_arr_u, skew_arr_v)).tolist()
+        return mean, dev, skew1
+    #########################
+    # LBP
+    #########################
     elif colorModel == 'LBP':
-        #########################
-        # LBP
-        #########################
         img_lbp = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         temp = []
         arr_lbp = []
