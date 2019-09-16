@@ -17,7 +17,6 @@ def feature_descriptor(imageName, colorModel):
     red_width = width / 100
     red_height = height / 100
 
-
     #########################
     # color moments
     #########################
@@ -66,7 +65,7 @@ def feature_descriptor(imageName, colorModel):
     #########################
     elif colorModel == 'LBP':
         img_lbp = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        radius = 50
+        radius = 1
         length = 8 * radius
         for i in range(red_height):
             for j in range(red_width):

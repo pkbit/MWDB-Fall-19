@@ -1,5 +1,6 @@
 import traceback
 from pymongo import MongoClient
+import constants
 
 
 def euclidean_dist(vectorA, vectorB):
@@ -11,7 +12,7 @@ def euclidean_dist(vectorA, vectorB):
 
 def kSimilarFeatures(imgFeature, featureDescriptors, model, k):
     distance = []
-    if model == "ColorMoments":
+    if model == "CM":
         for feature in featureDescriptors:
             dist = euclidean_dist(feature['CM'], imgFeature['CM'])
             distance.append([feature['imageName'], dist])
@@ -28,19 +29,20 @@ def main():
     imageId = imageId + ".jpg"
     try:
         client = MongoClient("mongodb://localhost:27017")
-        print "success"
         db = client.MWDB
 
-        if model == "ColorMoments":
+        if model == 'CM':
             imageFeature = db.cm.find_one({'imageName': imageId})
             if imageFeature is not None:
                 featureDescriptors = db.cm.find({'imageName': {"$ne": imageId}})
                 print kSimilarFeatures(imageFeature, featureDescriptors, model, int(k))
-        else:
+        elif model == 'LBP':
             imageFeature = db.lbp.find_one({'imageName': imageId})
             if imageFeature is not None:
                 featureDescriptors = db.lbp.find({'imageName': {"$ne": imageId}})
                 print kSimilarFeatures(imageFeature, featureDescriptors, model, int(k))
+        else:
+            print "Input model entered is incorrect."
 
     except Exception as detail:
         traceback.print_exc()
